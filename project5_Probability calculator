@@ -1,0 +1,70 @@
+import copy
+import random
+from collections import Counter
+
+class Hat:
+    def __init__(self,**kwargs) -> None:
+        self.contents =[]
+        for key,value in kwargs.items():
+            self.contents +=[key] *value
+        self.drawn_balls=[]
+        
+    def draw(self,num_of_balls):
+        if num_of_balls > len(self.contents):
+            self.contents.extend(self.drawn_balls)
+            self.drawn_balls.clear() 
+            return self.contents
+            
+        else:
+            drawn=random.sample(self.contents,k=num_of_balls)
+            for ball in drawn:
+                self.contents.remove(ball)
+                self.drawn_balls.append(ball)
+           
+            return drawn
+
+
+
+def experiment(hat, expected_balls, num_balls_drawn, num_experiments):
+    N =num_experiments
+    M=0
+    #drawn = hat.draw(num_balls_drawn)
+    experiment_hat = copy.deepcopy(hat) # deep copy to preserve the original because this is a experiment
+    
+    for _ in range(N):
+        
+        drawn = experiment_hat.draw(num_balls_drawn)
+        drawn_counter = Counter(drawn)
+        
+        if all(drawn_counter[ball] >= expected_balls[ball] for ball in expected_balls):
+          
+            M+=1
+    probability= M/N
+    return probability
+            
+
+
+
+# Test
+""" hat = Hat(black=6, red=4, green=3)
+print(hat.draw(4))
+print(hat.draw(4))
+print(hat.draw(4))
+print(hat.draw(4))
+print(hat.draw(4))
+print(hat.draw(4))
+print(hat.draw(4)) """
+
+
+""" hat1 = Hat(yellow=3, blue=2, green=6)
+hat2 = Hat(red=5, orange=4)
+hat3 = Hat(red=5, orange=4, black=1, blue=0, pink=2, striped=9) """
+
+
+""" hat = Hat(black=6, red=4, green=3)
+probability = experiment(hat=hat,
+                  expected_balls={"red":2,"green":1},
+                  num_balls_drawn=5,
+                  num_experiments=2000)
+print(probability) 
+print(hat.draw(1)) """
